@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "title": "한전 데이터센터 현황 (지역별 고객호수·계약전력)",
+    "as_of": "2023-12-31",
+    "source_file": "11298394-_____________________20231231.csv",
+    "original_encoding": "cp949",
+    "unit": {
+      "contract_power_mw": "MW"
+    },
+    "note": "지역은 한전 원본 구분 그대로(대전충남, 광주전남, 대구경북, 부산울산경남은 묶음). 고객호수 0인 지역은 avg_mw_per_customer=null."
+  },
+  "total": {
+    "customers": 150,
+    "contract_power_mw": 1986,
+    "avg_mw_per_customer": 13.24
+  },
+  "regions": [
+    {
+      "region": "서울",
+      "customers": 48,
+      "contract_power_mw": 653,
+      "avg_mw_per_customer": 13.6
+    },
+    {
+      "region": "인천",
+      "customers": 8,
+      "contract_power_mw": 69,
+      "avg_mw_per_customer": 8.62
+    },
+    {
+      "region": "경기",
+      "customers": 34,
+      "contract_power_mw": 681,
+      "avg_mw_per_customer": 20.03
+    },
+    {
+      "region": "강원",
+      "customers": 7,
+      "contract_power_mw": 85,
+      "avg_mw_per_customer": 12.14
+    },
+    {
+      "region": "충북",
+      "customers": 4,
+      "contract_power_mw": 30,
+      "avg_mw_per_customer": 7.5
+    },
+    {
+      "region": "대전충남",
+      "customers": 17,
+      "contract_power_mw": 162,
+      "avg_mw_per_customer": 9.53
+    },
+    {
+      "region": "전북",
+      "customers": 1,
+      "contract_power_mw": 2,
+      "avg_mw_per_customer": 2.0
+    },
+    {
+      "region": "광주전남",
+      "customers": 9,
+      "contract_power_mw": 62,
+      "avg_mw_per_customer": 6.89
+    },
+    {
+      "region": "대구경북",
+      "customers": 7,
+      "contract_power_mw": 63,
+      "avg_mw_per_customer": 9.0
+    },
+    {
+      "region": "부산울산경남",
+      "customers": 15,
+      "contract_power_mw": 179,
+      "avg_mw_per_customer": 11.93
+    },
+    {
+      "region": "제주",
+      "customers": 0,
+      "contract_power_mw": 0,
+      "avg_mw_per_customer": null
+    }
+  ]
+}
