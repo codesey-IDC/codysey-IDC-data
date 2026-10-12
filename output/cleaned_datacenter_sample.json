@@ -1,0 +1,402 @@
+[
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 0,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 1,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 2,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 3,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 4,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 5,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 6,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 7,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 8,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 9,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 10,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 11,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 12,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 13,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 14,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 15,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 16,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 17,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 18,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 19,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 20,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 21,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 22,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 23,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 24,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 25,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 26,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 27,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 28,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 30,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 31,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 32,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 33,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 34,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 35,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 36,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 37,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 38,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 39,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 40,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 41,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 42,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 43,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 44,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 45,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 46,
+        "it_power_kw": 53.23970031738281,
+        "cooling_load_kw": 50.57771530151367,
+        "pue": 1.19,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 47,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 49,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 50,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    },
+    {
+        "timestamp": "2016-01-01",
+        "building_id": 51,
+        "it_power_kw": 0.0,
+        "cooling_load_kw": 0.0,
+        "pue": NaN,
+        "air_temperature": 25.0
+    }
+]
