@@ -1,4 +1,4 @@
-data/
-output/cleaned_datacenter_merged.csv
-output/cleaned_train_merged.csv
-output/cleaned_train_merged.parquet
+/data/raw
+/data/models
+/data/external
+/output
