@@ -1,4 +1,5 @@
 /data/raw
 /data/models
 /data/external
-/output
+/output/*
+!/output/forecast/
