@@ -189,3 +189,48 @@ output/forecast/
     "perfect forecast 가정"을 명시해야 한다.
   - 기상 피처 제외 결정 이전에 Test 결과를 한 번 출력했다.
     결정 자체는 Val 결과로만 했다.
+
+
+--------------------------------------------------------------
+10. 2차: 예측 함수 / API / 시각화 (임태형)
+--------------------------------------------------------------
+[파일]
+  services/forecast/features.py   피처 계산 (학습·서빙 공용). train_forecast.py 도 이걸 import 한다.
+  services/forecast/predictor.py  Predictor: model_config.json + 모델 6개 로드, forecast(history, horizon)
+  services/forecast/schemas.py    요청/응답 Pydantic 스키마
+  services/forecast/main.py       FastAPI (:8002)  GET /health, POST /api/v1/forecast
+  output/forecast/models/model_config.json
+                                  CQR offset, 피처 순서, 학습 범위, 모델 파일명 (train_forecast.py 가 생성)
+  visualize_forecast.py           output/forecast/plots/forecast_report.html (plotly, 그래프 3개 + 지표표)
+  tests/                          pytest 22개 (피처 누수, 서빙=학습 재현, 안전장치, API)
+
+[실행]
+  pip install -r requirements.txt
+  python train_forecast.py --config-only     # 모델은 그대로 두고 model_config.json 만 생성
+  uvicorn services.forecast.main:app --port 8002   → http://localhost:8002/docs
+  python visualize_forecast.py
+  python -m pytest -q
+
+[API]
+  POST /api/v1/forecast
+    요청  {"horizon_hours": 24, "target": "it_load" | "cooling_load",
+           "history": [{"timestamp": "...", "it_power_kw": 2900.0}, ...]}   ← history 생략 시 학습 데이터 끝 시점
+    응답  origin_time, timestamps[h], predictions[h](q50), pi_lower[h], pi_upper[h],
+           in_training_range(bool), warnings[str]
+  - horizon 1~24 → 24h 모델, 25~168 → 168h 모델
+  - history 는 5분 또는 1시간 간격, 최소 168시간. 부족하거나 빈 시간 있으면 422
+  - 모델 없으면 503 (가짜 값 폴백 없음, Fallback 판단은 호출 쪽)
+
+[안전장치 (README 8번 반영)]
+  1) 피처 코드 공유: features.build_direct_dataset(학습) / build_forecast_features(서빙) 가
+     같은 _feature_block 을 쓴다. 서빙 결과가 test_pred_24h.parquet 와 일치하는 테스트 있음.
+  2) model_config.json 로 offset 등 저장
+  3) q05 <= q50 <= q95 아니면 정렬 + warnings 에 기록
+  4) 168시간 미만 입력 거부
+  5) 입력/예측이 학습 범위(2,389 ~ 3,457kW) 밖이면 warnings 에 기록, in_training_range=false
+
+[환경 주의]
+  - Windows 에서 pyarrow 17 + lightgbm 4.7 이면 pandas 를 먼저 import 했을 때 lightgbm predict 가
+    access violation 으로 죽는다. pyarrow 26 이상으로 해결 (requirements.txt 반영).
+  - Windows git(core.autocrlf=true) 이 모델 txt 를 CRLF 로 바꾸면 LightGBM 이 못 읽는다.
+    .gitattributes 에 변환 금지 추가했고, predictor 도 읽을 때 LF 로 정규화한다.
