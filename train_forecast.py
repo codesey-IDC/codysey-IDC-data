@@ -10,21 +10,35 @@
 
 냉각 부하(cooling_load_kw)는 이 데이터에서 it_power_kw와 값이 완전히 같으므로
 IT 부하 예측값이 곧 냉각 부하 예측값이다.
+
+피처 계산은 services/forecast/features.py 를 쓴다 (서빙 predictor 와 공용).
+
+실행:
+  python train_forecast.py                # 학습 + 평가 + 모델/지표/model_config.json 저장
+  python train_forecast.py --config-only  # 학습 없이 기존 모델·metrics.json 으로 model_config.json 만 생성
 """
 from __future__ import annotations
 
 import json
 import os
+import sys
+from datetime import datetime, timezone
 
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from services.forecast.features import (  # noqa: E402
+    TARGET, WEATHER_COLS, HORIZONS, MIN_HISTORY_HOURS, RESAMPLE_RULE,
+    build_direct_dataset, feature_names, load_hourly,
+)
+
 DATA_PATH = 'data/synthetic_idc_90d.parquet'
 OUTPUT_DIR = 'output/forecast'
+MODEL_DIR = os.path.join(OUTPUT_DIR, 'models')
+CONFIG_PATH = os.path.join(MODEL_DIR, 'model_config.json')
 
-TARGET = 'it_power_kw'
-WEATHER_COLS = ['outdoor_temp_c', 'outdoor_humidity', 'wind_speed']
 # IT 부하(CPU 트레이스)는 날씨와 물리적으로 무관하다. Val에서 기상 피처를 넣으면
 # MAPE가 오히려 나빠졌으므로(24h 0.98→1.02%, 168h 0.94→1.03%) 기본은 제외.
 # 켤 경우 미래 외기 실측값을 쓰는 것이므로 "perfect forecast 가정"을 명시해야 한다.
@@ -42,7 +56,6 @@ FORBIDDEN_FEATURES = {
 SPLITS = {'train': (1, 63), 'val': (64, 76), 'test': (77, 90)}
 QUANTILES = (0.05, 0.5, 0.95)
 ALPHA = 0.10  # 90% 예측구간
-HORIZONS = {'24h': 24, '168h': 168}
 
 LGB_PARAMS = dict(
     n_estimators=400,
@@ -57,73 +70,73 @@ LGB_PARAMS = dict(
 )
 
 
-def load_hourly(path: str) -> pd.DataFrame:
-    """5분 데이터를 1시간 평균으로 집계하고 Day 번호(1~90)를 붙인다."""
-    raw = pd.read_parquet(path)
-    hourly = (raw.set_index('timestamp')[[TARGET] + WEATHER_COLS]
-              .resample('h').mean())
-    start = hourly.index[0].normalize()
-    hourly['day'] = (hourly.index.normalize() - start).days + 1
-    return hourly
-
-
-def build_direct_dataset(hourly: pd.DataFrame, max_h: int) -> pd.DataFrame:
-    """예측 시점 t에서 h시간 뒤(t+h)를 맞히는 학습 행을 만든다.
-
-    모든 lag는 '예측 시점 t 이전에 관측된 값'만 쓰도록 위치를 검증한다.
-      - lag_24  = y(t+h-24)  : h <= 24 일 때만 t 이전 → 24h 모델에서만 사용
-      - lag_168 = y(t+h-168) : h <= 168 이면 항상 t 이전
-    """
-    y = hourly[TARGET].to_numpy()
-    n = len(y)
-    idx = hourly.index
-    days = hourly['day'].to_numpy()
-    roll24 = hourly[TARGET].rolling(24).mean().to_numpy()  # t 포함 과거 24시간만
-    use_lag24 = max_h <= 24
-
-    frames = []
-    for h in range(1, max_h + 1):
-        origin = np.arange(0, n - h)
-        target = origin + h
-        lag168_pos = target - 168
-        ok = (lag168_pos >= 0) & ~np.isnan(roll24[origin])  # 초기 168시간 제외
-        origin, target, lag168_pos = origin[ok], target[ok], lag168_pos[ok]
-
-        assert (lag168_pos <= origin).all(), 'lag_168이 예측 시점 이후 값을 참조'
-        cols = {
-            'origin_time': idx[origin],
-            'target_time': idx[target],
-            'origin_day': days[origin],
-            'target_day': days[target],
-            'h': h,
-            'last_value': y[origin],
-            'rolling_mean_24h': roll24[origin],
-            'lag_168': y[lag168_pos],
-        }
-        if use_lag24:
-            lag24_pos = target - 24
-            assert (lag24_pos <= origin).all(), 'lag_24가 예측 시점 이후 값을 참조'
-            cols['lag_24'] = y[lag24_pos]
-
-        target_idx = idx[target]
-        cols['hour'] = target_idx.hour
-        cols['dayofweek'] = target_idx.dayofweek
-        cols['is_weekend'] = (target_idx.dayofweek >= 5).astype(int)
-        if USE_WEATHER_FEATURES:
-            for c in WEATHER_COLS:
-                cols[c] = hourly[c].to_numpy()[target]
-        cols['y'] = y[target]
-        frames.append(pd.DataFrame(cols))
-
-    return pd.concat(frames, ignore_index=True)
-
-
-def feature_columns(data: pd.DataFrame) -> list[str]:
+def feature_columns(data: pd.DataFrame, max_h: int) -> list[str]:
     meta = {'origin_time', 'target_time', 'origin_day', 'target_day', 'y'}
     feats = [c for c in data.columns if c not in meta]
     leaked = FORBIDDEN_FEATURES & set(feats)
     assert not leaked, f'누수 위험 피처 포함: {leaked}'
+    expected = feature_names(max_h) + (WEATHER_COLS if USE_WEATHER_FEATURES else [])
+    assert feats == expected, f'피처 순서가 features.feature_names 와 다름: {feats}'
     return feats
+
+
+def model_file(name: str, q: float) -> str:
+    return f'it_load_{name}_q{int(q * 100):02d}.txt'
+
+
+def write_model_config(hourly: pd.DataFrame, train_range: dict[str, dict],
+                       offsets: dict[str, float], feats: dict[str, list[str]]) -> None:
+    """서빙(predictor)이 읽는 설정 파일. CQR offset·피처 순서·학습 범위를 모델 옆에 둔다."""
+    config = {
+        'generated_at': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+        'data_path': DATA_PATH,
+        'target': TARGET,
+        'resample_rule': RESAMPLE_RULE,
+        'alpha': ALPHA,
+        'min_history_hours': MIN_HISTORY_HOURS,
+        'splits_day': SPLITS,
+        'data_period': {'start': str(hourly.index[0]), 'end': str(hourly.index[-1])},
+        # 범위 밖 입력 경고 기준: 학습 데이터(5분 원본) IT 부하 범위.
+        # (1시간 평균 Train 범위는 Val/Test 정상값도 살짝 벗어나므로 경고 기준으로 쓰지 않는다)
+        'train_target_range_kw': train_range['raw'],
+        'train_hourly_target_range_kw': train_range['hourly'],
+        'lgb_params': LGB_PARAMS,
+        'models': {
+            name: {
+                'max_h': HORIZONS[name],
+                'features': feats[name],
+                'cqr_offset_kw': offsets[name],
+                'files': {f'q{int(q * 100):02d}': model_file(name, q) for q in QUANTILES},
+            }
+            for name in HORIZONS
+        },
+    }
+    with open(CONFIG_PATH, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(config, f, ensure_ascii=False, indent=4)
+    print(f'   model_config.json 저장: {CONFIG_PATH}')
+
+
+def target_ranges(hourly: pd.DataFrame, train_parts: dict[str, pd.DataFrame]) -> dict:
+    train_y = pd.concat([p['y'] for p in train_parts.values()])
+    raw = pd.read_parquet(DATA_PATH)[TARGET]
+    return {
+        'hourly': {'min': float(train_y.min()), 'max': float(train_y.max())},
+        'raw': {'min': float(raw.min()), 'max': float(raw.max())},
+    }
+
+
+def config_only() -> None:
+    """학습 없이, 이미 저장된 metrics.json 의 offset 으로 model_config.json 만 만든다."""
+    with open(os.path.join(OUTPUT_DIR, 'metrics.json'), encoding='utf-8') as f:
+        metrics = json.load(f)
+    hourly = load_hourly(DATA_PATH)
+    feats, train_parts = {}, {}
+    for name, max_h in HORIZONS.items():
+        data = build_direct_dataset(hourly, max_h)
+        feats[name] = feature_columns(data, max_h)
+        train_parts[name] = split(data)['train']
+    offsets = {name: float(metrics[name]['cqr_offset_kw']) for name in HORIZONS}
+    write_model_config(hourly, target_ranges(hourly, train_parts), offsets, feats)
 
 
 def split(data: pd.DataFrame) -> dict[str, pd.DataFrame]:
@@ -199,14 +212,17 @@ def main() -> None:
     hourly = load_hourly(DATA_PATH)
     print(f'   {len(hourly):,}행 ({hourly.index[0]} ~ {hourly.index[-1]})')
 
-    os.makedirs(os.path.join(OUTPUT_DIR, 'models'), exist_ok=True)
+    os.makedirs(MODEL_DIR, exist_ok=True)
     report = {}
+    offsets, feats_by_model, train_parts = {}, {}, {}
 
     for name, max_h in HORIZONS.items():
         print(f'\n2. [{name}] 데이터셋 생성 (h = 1~{max_h})...')
-        data = build_direct_dataset(hourly, max_h)
-        feats = feature_columns(data)
+        data = build_direct_dataset(
+            hourly, max_h, exog_cols=WEATHER_COLS if USE_WEATHER_FEATURES else None)
+        feats = feature_columns(data, max_h)
         parts = split(data)
+        feats_by_model[name], train_parts[name] = feats, parts['train']
         print(f'   피처: {feats}')
         print('   ' + ' / '.join(f'{k} {len(v):,}행' for k, v in parts.items()))
 
@@ -217,6 +233,7 @@ def main() -> None:
         val_pred = predict(models, parts['val'], feats)
         offset = cqr_offset(val_pred[0.05], val_pred[0.95],
                             parts['val']['y'].to_numpy())
+        offsets[name] = offset
 
         print(f'5. [{name}] Test 평가...')
         test_pred = predict(models, parts['test'], feats)
@@ -230,8 +247,7 @@ def main() -> None:
               importance.nlargest(5).to_dict())
 
         for q, model in models.items():
-            model.booster_.save_model(os.path.join(
-                OUTPUT_DIR, 'models', f'it_load_{name}_q{int(q * 100):02d}.txt'))
+            model.booster_.save_model(os.path.join(MODEL_DIR, model_file(name, q)))
 
         out = parts['test'][['origin_time', 'target_time', 'h', 'y']].copy()
         out['q05'] = test_pred[0.05] - offset
@@ -243,8 +259,14 @@ def main() -> None:
     with open(os.path.join(OUTPUT_DIR, 'metrics.json'), 'w',
               encoding='utf-8') as f:
         json.dump(report, f, ensure_ascii=False, indent=4)
+
+    print('\n6. model_config.json 저장...')
+    write_model_config(hourly, target_ranges(hourly, train_parts), offsets, feats_by_model)
     print(f'\n완료: 모델·예측·지표가 {OUTPUT_DIR}/ 에 저장되었습니다.')
 
 
 if __name__ == '__main__':
-    main()
+    if '--config-only' in sys.argv[1:]:
+        config_only()
+    else:
+        main()
