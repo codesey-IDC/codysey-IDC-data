@@ -3,3 +3,7 @@
 /data/external
 /output/*
 !/output/forecast/
+
+# python
+__pycache__/
+.pytest_cache/
